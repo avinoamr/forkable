@@ -50,6 +50,48 @@ describe( "Forkable", function () {
                 assert.deepEqual( results.even, [ 2, 4 ] );
                 done();
             })
+    });
+
+    it( "defaults to a PassThrough stream", function ( done ) {
+        createReadStream( "hello" )
+            .pipe( forkable() )
+            .fork( function ( data ) {
+                return "dest"
+            })
+            .pipe( function ( name ) {
+                return createWriteStream()
+                    .on( "finish", function () {
+                        assert( name, "dest" );
+                        assert( this.val(), "hello" );
+                        done();
+                    })
+            })
+    });
+
+    it( "passes options object into the PassThrough stream", function ( done ) {
+        var results = [];
+        from( [ 1, 2, 3, 4, 5 ] )
+            .pipe( forkable( { objectMode: true } ) )
+            .fork( function ( data ) {
+                return "dest"
+            })
+            .pipe( function ( name ) {
+                return new stream.PassThrough({ objectMode: true })
+                    .on( "data", function ( d ) {
+                        results.push( d )
+                    })
+                    .on( "finish", function () {
+                        assert( name, "dest" );
+                        assert( results, [ 1, 2, 3, 4, 5 ] );
+                        done();
+                    })
+            })
+    });
+
+    it( "throws an error when non-readable stream is forked", function () {
+        assert.throws( function () {
+            forkable( new stream.Writable () );
+        }, /non-readable/i )
     })
 
     it( "emits an error when no pipe function is defined", function ( done ) {
@@ -67,7 +109,7 @@ describe( "Forkable", function () {
             .on( "data", function () {});
     });
 
-    it( "emits an error when the pipe isn't a writable stream", function () {
+    it( "throws an error when the pipe isn't a writable stream", function () {
         var forked = forkable( from( [ 1, 2, 3, 4, 5 ] ) )
             .fork( function ( data ) {
                 var map = {};
@@ -79,7 +121,7 @@ describe( "Forkable", function () {
         assert.throws( function () {
             forked.pipe( {} );
         }, /must be a function/ )
-    })
+    });
 
     it( "implements the README.md usage example", function ( done ) {
         var input = [

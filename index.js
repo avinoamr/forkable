@@ -5,6 +5,23 @@ module.exports = forkable;
 module.exports.ForkStream = ForkStream;
 
 function forkable( _stream ) {
+    // default pass-through
+    if ( arguments.length == 0 ) {
+        _stream = {};
+    }
+
+    // pass the options argument into the PassThrough constructor, as-is
+    if ( _stream.constructor == Object ) {
+        
+        // default high water mark of 1, for minimal memory overhead
+        _stream.highWaterMark || ( _stream.highWaterMark = 1 );
+        _stream = new stream.PassThrough( _stream );
+    }
+
+    if ( !_stream.pipe || !_stream.read ) {
+        throw new Error( "Non-readable streams are not forkable" );
+    }
+
     _stream.fork = function ( forkfn, options ) { 
         options || ( options = {} );
         options.writableObjectMode = this._readableState.objectMode;

@@ -37,7 +37,18 @@ forkable( fs.createReadStream( "somefile" ) )
 
 `forkable([ readable ])`
 
-Adds the `.fork()` method to the provided readable stream, and returns it. This is the simplest way to attach the forkable functionality to any existing stream.
+* **readable** a Node readable stream, or a standard `options` object that is passed to Node's `PassThrough` stream. Optional
+* **returns** the `readable` stream itself, augmented with the `.fork` method
+
+Adds the `.fork()` method to the provided readable stream, and returns it. This is the simplest way to attach the forkable functionality to any existing stream. 
+
+If you omit the `readable` argument, a `PassThrough` stream will be created and returned by default. You can also pass in an options object to be passed into the new `PassThrough`, for example:
+
+```javascript
+fs.createReadStream( "file.log" )
+    .pipe( forkable({ highWaterMark: 100 }) )
+    .fork( fn );
+```
 
 `fork( fn [, options ] )`
 
