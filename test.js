@@ -61,8 +61,8 @@ describe( "Forkable", function () {
             .pipe( function ( name ) {
                 return createWriteStream()
                     .on( "finish", function () {
-                        assert( name, "dest" );
-                        assert( this.val(), "hello" );
+                        assert.equal( name, "dest" );
+                        assert.equal( this.val(), "hello" );
                         done();
                     })
             })
@@ -81,8 +81,8 @@ describe( "Forkable", function () {
                         results.push( d )
                     })
                     .on( "finish", function () {
-                        assert( name, "dest" );
-                        assert( results, [ 1, 2, 3, 4, 5 ] );
+                        assert.equal( name, "dest" );
+                        assert.deepEqual( results, [ 1, 2, 3, 4, 5 ] );
                         done();
                     })
             })

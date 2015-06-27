@@ -69,9 +69,9 @@ ForkStream.prototype._transform = function ( data, enc, done ) {
 
     // create the fork
     var output = [];
+    var pipe = stream.Transform.prototype.pipe;
     Object.keys( dest ).forEach( function ( name ) {
         if ( !state.destinations[ name ] ) {
-            var pipe = stream.Transform.prototype.pipe;
             state.destinations[ name ] = pipe.call( this, fork( this, name ) );
         }
         output.push({ dest: name, value: dest[ name ] });
