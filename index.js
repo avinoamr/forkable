@@ -12,9 +12,6 @@ function forkable( _stream ) {
 
     // pass the options argument into the PassThrough constructor, as-is
     if ( _stream.constructor == Object ) {
-        
-        // default high water mark of 1, for minimal memory overhead
-        _stream.highWaterMark || ( _stream.highWaterMark = 1 );
         _stream = new stream.PassThrough( _stream );
     }
 
@@ -33,7 +30,6 @@ function forkable( _stream ) {
 util.inherits( ForkStream, stream.Transform )
 function ForkStream( forkfn, options ) {
     options || ( options = {} );
-    options.highWaterMark = 1;
     options.readableObjectMode = true;
 
     stream.Transform.call( this, options );
@@ -83,7 +79,7 @@ ForkStream.prototype._transform = function ( data, enc, done ) {
 }
 
 function fork ( _stream, dest ) {
-    var forked = new stream.Transform({ objectMode: true, highWaterMark: 1 });
+    var forked = new stream.Transform({ objectMode: true });
     forked._transform = function ( data, enc, done ) {
         if ( data.dest === dest ) {
             done( null, data.value );

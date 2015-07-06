@@ -1,6 +1,6 @@
 {
   "name": "forkable",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "Fork streams into different destinations based on the input data",
   "main": "index.js",
   "scripts": {
